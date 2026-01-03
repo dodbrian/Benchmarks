@@ -3,33 +3,33 @@ using BenchmarkDotNet.Running;
 
 var summary = BenchmarkRunner.Run<EnumerableVsListBenchmark>();
 
-public record TestRecord(Guid id, string name)
+public record TestRecord(Guid Id, string Name)
 {
-    public int quantity { get; set; }
+    public int Quantity { get; set; }
 };
 
 [MemoryDiagnoser]
 public class EnumerableVsListBenchmark
 {
-    private static IEnumerable<TestRecord> enumerable = Enumerable.Empty<TestRecord>();
+    private readonly IEnumerable<TestRecord> _enumerable;
 
     public EnumerableVsListBenchmark()
     {
-        enumerable = Enumerable
+        _enumerable = Enumerable
             .Range(0, 100000)
             .Select((item, index) =>
                 new TestRecord(Guid.Empty, "Record name")
                 {
-                    quantity = index
+                    Quantity = index
                 });
     }
 
     [Benchmark]
     public void ListTest()
     {
-        var list = enumerable.ToList();
+        var list = _enumerable.ToList();
 
-        list.ForEach(item => item.quantity += 1);
+        list.ForEach(item => item.Quantity += 1);
 
         foreach (var item in list)
         {
@@ -40,11 +40,11 @@ public class EnumerableVsListBenchmark
     [Benchmark]
     public void EnumerableTest()
     {
-        var list = enumerable;
+        var list = _enumerable;
 
         list = list.Select(item =>
         {
-            item.quantity += 1;
+            item.Quantity += 1;
 
             return item;
         });
